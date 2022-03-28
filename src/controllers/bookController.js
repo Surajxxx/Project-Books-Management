@@ -9,6 +9,7 @@ const ReviewModel = require('../models/reviewModel')
     const isValid = function(value){
         if(typeof (value) == 'undefined' || value == null) return false
         if(typeof (value) == 'string' && value.trim().length == 0) return false
+        if(typeof (value) == 'number') return false
         return true
     }
 
@@ -119,7 +120,7 @@ const booksList = async function(req, res){
         
         const requestBody = req.body
         const queryParams = req.query
-        const filterConditions = {isDeleted : false, deletedAt : null}
+        const filterConditions = {isDeleted : false}
 
             if(isValidRequestBody(requestBody)){
             return  res.status(400).send({status : false, message : "data is not required in body"})
@@ -136,11 +137,11 @@ const booksList = async function(req, res){
                 }
             }
             
-            if(isValid(category) && typeof (category) == 'string'){
+            if(isValid(category)){
                 filterConditions['category'] = category.trim()               
             }
 
-            if(isValid(subcategory) && typeof (subcategory) == 'string'){
+            if(isValid(subcategory)){
                 filterConditions['subcategory'] = subcategory.trim()               
             }
            
@@ -196,9 +197,9 @@ const getBookDetails = async function(req, res){
         return res.status(404).send({status : false, message : "no book found by this ID"})
         }
    
-        const allReviewsByBookId = await ReviewModel.find({bookId : bookId, isDeleted : false})
+        const allReviews = await ReviewModel.find({bookId : bookId, isDeleted : false})
         
-        bookById.reviewsData = allReviewsByBookId
+        bookById.reviewsData = allReviews
 
         res.status(200).send({status : true, message : "Book details", data : bookById })
     
@@ -244,7 +245,7 @@ const updateBooks = async function(req, res){
 
             if(requestBody.hasOwnProperty("title")){
 
-                if(isValid(title) && typeof (title) == 'string'){
+                if(isValid(title)){
 
                     const isTitleUnique = await BookModel.findOne({title : title.trim(), isDeleted : false, deletedAt : null})
     
@@ -261,7 +262,7 @@ const updateBooks = async function(req, res){
             }
             
             if(requestBody.hasOwnProperty("excerpt")){ 
-                if(isValid(excerpt)  && typeof (excerpt) == 'string'){
+                if(isValid(excerpt)){
 
                     updates["excerpt"] = excerpt.trim()
 
@@ -272,7 +273,7 @@ const updateBooks = async function(req, res){
 
             if(requestBody.hasOwnProperty("releasedAt")){
 
-                if(isValid(releasedAt)  && typeof (releasedAt) == 'string'){
+                if(isValid(releasedAt)){
                     if(!/^[0-9]{4}[-]{1}[0-9]{2}[-]{1}[0-9]{2}/.test(releasedAt)){
                     return  res.status(400).send({status : false, message : `released date format should be YYYY-MM-DD`})
                     }
@@ -290,13 +291,13 @@ const updateBooks = async function(req, res){
 
             if(requestBody.hasOwnProperty("ISBN")){
 
-                if(isValid(ISBN) && typeof (releasedAt) == 'string' ){
+                if(isValid(ISBN)){
 
                     if(!/((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])/.test(ISBN)){
                         return  res.status(400).send({status : false, message : `enter a valid format of ISBN`})    
                     }
             
-                    const isUniqueISBN = await BookModel.findOne({ISBN : ISBN, isDeleted : false})    
+                    const isUniqueISBN = await BookModel.findOne({ISBN : ISBN, isDeleted : false, deletedAt : null})    
             
                         if(isUniqueISBN){
                         return  res.status(400).send({status : false, message : `ISBN already exist`})

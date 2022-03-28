@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const isValid = function(value){
     if(typeof (value) == 'undefined' || value == null) return false
     if(typeof (value) == 'string' && value.trim().length == 0) return false
+    if(typeof (value) == 'number') return false
     return true
 }
 
@@ -35,7 +36,7 @@ const newReview = async function(req, res){
             }
 
             if(!isValidRequestBody(requestBody)){
-            return  res.status(400).send({status : false, message : "Book data is required to create a new user"})
+            return  res.status(400).send({status : false, message : "review data is required to create a new review"})
             }
             
             if(!bookId){
@@ -46,7 +47,7 @@ const newReview = async function(req, res){
             return  res.status(400).send({status : false, message : `enter a valid bookId`})
             }
 
-        const bookById = await BookModel.findOne({_id : bookId, isDeleted : false})
+        const bookById = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null})
 
             if(!bookById){
             return res.status(404).send({status : false, message : "Book does not exist"})
@@ -54,9 +55,18 @@ const newReview = async function(req, res){
 
         const {reviewedBy, rating, review} = requestBody
 
-        if(!isValid(reviewedBy)){
-            requestBody["reviewedBy"] = "Guest" 
+        if (requestBody.hasOwnProperty(reviewedBy)){
+            if(isValid(reviewedBy)){
+                requestBody["reviewedBy"] = reviewedBy.trim()
+
+            }else{
+                res.status(400).send({status : false, message : "enter a valid name"})
+            }
+
+        }else{
+            requestBody["reviewedBy"] = "Guest"
         }
+       
 
         if(!isValidRating(rating)){
         return res.status(400).send({status : false, message : "rating must be provided in Number format: 1 < Rating < 5  "})
@@ -66,18 +76,18 @@ const newReview = async function(req, res){
 
             if(typeof (review) === "string" && review.trim().length > 0){
 
-            requestBody.bookId = bookId
-            requestBody.isDeleted = false 
-            requestBody.reviewedAt = Date.now()     
+                requestBody.bookId = bookId
+                requestBody.isDeleted = false 
+                requestBody.reviewedAt = Date.now()     
 
-            const createReview = await ReviewModel.create(requestBody)
+                const createReview = await ReviewModel.create(requestBody)
 
-            const updateReviewCount = await BookModel.findOneAndUpdate({_id: bookId, isDeleted : false},  {$inc : {reviews : +1}}, {new : true})
+                const updateReviewCount = await BookModel.findOneAndUpdate({_id: bookId, isDeleted : false},  {$inc : {reviews : +1}}, {new : true})
 
-            res.status(201).send({status : true, message: "review added successfully", data: createReview})
+                res.status(201).send({status : true, message: "review added successfully", data: createReview})
 
             }else{
-                res.status(400).send({status : false, message : "please enter review in valid format"})
+                res.status(400).send({status : false, message : "please enter a review in valid format"})
             }
         }
        
