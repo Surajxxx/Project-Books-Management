@@ -140,7 +140,7 @@ const userLogin = async function(req, res){
             return  res.status(400).send({status : false, message : "password should be: 8 to 15 characters, at least one letter and one number "})
             }
 
-        const loginUser = await UserModel.findOne({email : userName.toLowerCase(), password: password})
+        const loginUser = await UserModel.findOne({email : userName.toLowerCase().trim(), password: password})
 
             if(!loginUser){
             return  res.status(404).send({status : false, message : "invalid login credentials" })

@@ -64,7 +64,7 @@
 
 ### POST /login
 - Allow an user to login with their email and password.
-- On a successful login attempt return a JWT token contatining the userId, exp, iat. The response should be a JSON object like [this](#successful-response-structure)
+- On a successful login attempt return a JWT token  contatining the userId,exp, iat. The response should be a JSON object like [this](#successful-response-structure)
 - If the credentials are incorrect return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
 
 ## Books API

@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema({
     title :{
         type     : String,
         required : [ true, `title must be provided from these values: ["Mr", "Mrs", "Miss"]`],
-        enum     : ["Mr", "Mrs", "Miss"]
+        enum     : ["Mr", "Mrs", "Miss"],
+        trim     : true
     },
     name :{
         type     : String,
