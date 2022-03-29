@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken")
 const isValid = function(value){
     if(typeof (value) == 'undefined' || value == null) return false
     if(typeof (value) == 'string' && value.trim().length == 0) return false
+    if(typeof (value) == 'number' ) return false
+    if(typeof (value) == 'object') return false
     return true
 }
 
@@ -45,15 +47,15 @@ const registerUser = async function(req, res){
                 const {title, name, phone, email, password} = requestBody
                     
                 if(!isValid(title)){
-                return    res.status(400).send({status : false, message : `title is required`})
+                return    res.status(400).send({status : false, message : `title is required and should be valid format like: "Mr"`})
                 }
 
-                if(!(["Mr", "Mrs", "Miss"].includes(title))){
+                if(!(["Mr", "Mrs", "Miss"].includes(title.trim()))){
                 return    res.status(400).send({status : false, message : `title must be provided from these values: Mr/Mrs/Miss`})
                 }
 
                 if(!isValid(name)){
-                return    res.status(400).send({status : false, message : "name is required"})
+                return    res.status(400).send({status : false, message : `name is required and should be in valid format like : "JOHN"`})
                 }
 
                 if(!isValid(phone)){
@@ -83,13 +85,13 @@ const registerUser = async function(req, res){
                 const isEmailUnique = await UserModel.findOne({email})
                 
                 if(isEmailUnique){
-                return    res.status(400).send({status : false, message : "email already exist"})
+                return    res.status(400).send({status : false, message : `email: ${email} already exist`})
                 }
                 
                 const isPhoneUnique = await UserModel.findOne({phone})
             
                 if(isPhoneUnique){
-                return    res.status(400).send({status : false, message : "mobile number already exist"})
+                return    res.status(400).send({status : false, message : `mobile number: ${phone} already exist`})
                 }
             
     // validation ends here
