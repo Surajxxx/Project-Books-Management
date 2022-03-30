@@ -16,7 +16,7 @@ const authentication = async function(req, res, next){
         if(!decodedToken){
         return res.status(401).send({status : false, message: "authentication failed"})
         }
-
+        // setting a key in request,  "decodedToken" which consist userId and exp.
         req.decodedToken = decodedToken
         
         next()
@@ -32,7 +32,6 @@ const authorization = async function(req, res,next){
         const bookId = req.params.bookId
         const decodedToken = req.decodedToken
        
-
         if(mongoose.Types.ObjectId.isValid(bookId) == false){
         return res.status(400).send({status : false, message : "bookId is not valid"})
         }
@@ -40,13 +39,13 @@ const authorization = async function(req, res,next){
         const bookById = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null})
 
         if(!bookById){
-        return res.status(400).send({status : false, message : `no book found by ${bookId}`})    
+        return res.status(404).send({status : false, message : `no book found by ${bookId}`})    
         }
 
         if((decodedToken.userId != bookById.userId)){
         return res.status(403).send({status : false, message : `unauthorized access`})
         }
-
+        // checking jwt token expiry
         if((Date.now() > (decodedToken.exp * 1000))){
         return res.status(403).send({status : false, message : `session expired, please login again`})
         }

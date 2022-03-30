@@ -12,7 +12,6 @@ const reviewSchema = new mongoose.Schema({
     },
     reviewedBy:{
         type     : String,
-        required : [true, "reviewed by must be provided"],
         default  : "Guest",
         trim     : true 
     },

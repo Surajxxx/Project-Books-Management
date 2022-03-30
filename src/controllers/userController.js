@@ -31,68 +31,68 @@ const isValidPhone = function(phone){
 const registerUser = async function(req, res){
 
     try{
-                const requestBody = req.body
-                const queryParams = req.query
+            const requestBody = req.body
+            const queryParams = req.query
 
-    // validation starts here
 
-                if(isValidRequestBody(queryParams)){
-                return    res.status(400).send({status: false, message : "invalid endpoint"})
-                }
+            // query params must be empty
+            if(isValidRequestBody(queryParams)){
+            return    res.status(400).send({status: false, message : "invalid endpoint"})
+            }
 
-                if (!isValidRequestBody(requestBody)){
-                return    res.status(400).send({status : false, message : "user data is required to create a new user"})
-                }    
-                    
-                const {title, name, phone, email, password} = requestBody
-                    
-                if(!isValid(title)){
-                return    res.status(400).send({status : false, message : `title is required and should be valid format like: "Mr"`})
-                }
-
-                if(!(["Mr", "Mrs", "Miss"].includes(title.trim()))){
-                return    res.status(400).send({status : false, message : `title must be provided from these values: Mr/Mrs/Miss`})
-                }
-
-                if(!isValid(name)){
-                return    res.status(400).send({status : false, message : `name is required and should be in valid format like : "JOHN"`})
-                }
-
-                if(!isValid(phone)){
-                return    res.status(400).send({status : false, message : "mobile number is required"})
-                }
-
-                if(!isValidPhone(phone)){
-                return    res.status(400).send({status : false, message : " please enter a valid 10 digit mobile number without country code and 0"})
-                }
-
-                if(!isValid(email)){
-                return    res.status(400).send({status : false, message : "email address is required"})
-                }
-
-                if(!isValidEmail(email)){
-                return    res.status(400).send({status : false, message : " please enter a valid email address"})
-                }
-
-                if(!isValid(password)){
-                return    res.status(400).send({status : false, message : "password is required"})
-                }
+            if (!isValidRequestBody(requestBody)){
+            return    res.status(400).send({status : false, message : "user data is required to create a new user"})
+            }    
+            // using destructuring then individually validating each key    
+            const {title, name, phone, email, password} = requestBody
                 
-                if(!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/.test(password)){
-                return    res.status(400).send({status : false, message : "password should be: 8 to 15 characters, at least one letter and one number "})
-                }
-                
-                const isEmailUnique = await UserModel.findOne({email})
-                
-                if(isEmailUnique){
-                return    res.status(400).send({status : false, message : `email: ${email} already exist`})
-                }
-                
-                const isPhoneUnique = await UserModel.findOne({phone})
+            if(!isValid(title)){
+            return    res.status(400).send({status : false, message : `title is required and should be valid format like: "Mr"`})
+            }
+
+            if(!(["Mr", "Mrs", "Miss"].includes(title.trim()))){
+            return    res.status(400).send({status : false, message : `title must be provided from these values: Mr/Mrs/Miss`})
+            }
+
+            if(!isValid(name)){
+            return    res.status(400).send({status : false, message : `name is required and should be in valid format like : "JOHN"`})
+            }
+
+            if(!isValid(phone)){
+            return    res.status(400).send({status : false, message : "mobile number is required"})
+            }
+
+            if(!isValidPhone(phone)){
+            return    res.status(400).send({status : false, message : " please enter a valid 10 digit mobile number without country code and 0"})
+            }
+
+            if(!isValid(email)){
+            return    res.status(400).send({status : false, message : "email address is required"})
+            }
+
+            if(!isValidEmail(email)){
+            return    res.status(400).send({status : false, message : " please enter a valid email address"})
+            }
+
+            if(!isValid(password)){
+            return    res.status(400).send({status : false, message : "password is required"})
+            }
             
-                if(isPhoneUnique){
-                return    res.status(400).send({status : false, message : `mobile number: ${phone} already exist`})
-                }
+            if(!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,15}$/.test(password)){
+            return    res.status(400).send({status : false, message : "password should be: 8 to 15 characters, at least one letter and one number "})
+            }
+            
+            const isEmailUnique = await UserModel.findOne({email})
+            
+            if(isEmailUnique){
+            return    res.status(400).send({status : false, message : `email: ${email} already exist`})
+            }
+            
+            const isPhoneUnique = await UserModel.findOne({phone})
+        
+            if(isPhoneUnique){
+            return    res.status(400).send({status : false, message : `mobile number: ${phone} already exist`})
+            }
             
     // validation ends here
             
@@ -115,6 +115,7 @@ const userLogin = async function(req, res){
         const requestBody = req.body
         const queryParams = req.query
 
+            // query params must be empty
             if(isValidRequestBody(queryParams)){
             return  res.status(400).send({status: false, message : "invalid endpoint"})  
             }
@@ -125,7 +126,7 @@ const userLogin = async function(req, res){
 
         const userName = requestBody.email
         const password = requestBody.password    
-
+            // validating userName and password
             if(!isValid(userName)){
             return  res.status(400).send({status: false, message : "email is required"})    
             }
@@ -152,7 +153,7 @@ const userLogin = async function(req, res){
         const payLoad = {userId : userID }
         const secretKey = "asdfgh!@#41234sasdg565"
 
-
+       // creating JWT
         const token = jwt.sign(payLoad, secretKey,  {expiresIn : "7d"})
         
         res.header("x-api-key", token)
