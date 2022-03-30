@@ -48,8 +48,8 @@ const newReview = async function(req, res){
             if(!isValidIdType(bookId)){
             return  res.status(400).send({status : false, message : `enter a valid bookId`})
             }
-        // USING .lean() to convert mongoose object to plain js object for adding a property temporarily     
-        const bookByBookId = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null}).lean()
+           
+        const bookByBookId = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null})
 
             if(!bookByBookId){
             return res.status(404).send({status : false, message :` No Book found by ${bookId}`})
@@ -75,7 +75,7 @@ const newReview = async function(req, res){
        
         if(isValidRating(rating)){
 
-            if(rating > 1 && rating < 5){
+            if(rating < 1 || rating > 5){
             return res.status(400).send({status : false, message : "rating should be between : 1 to 5  "})
             }
 
@@ -108,10 +108,13 @@ const newReview = async function(req, res){
 
         const allReviewsOfThisBook = await ReviewModel.find({bookId: bookId, isDeleted : false})
 
-        // temporarily adding one new property inside book which consist all reviews of this book
-        bookByBookId.reviewsData = allReviewsOfThisBook
+        // USING .lean() to convert mongoose object to plain js object for adding a property temporarily     
+        const book = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null}).lean()
 
-        res.status(201).send({status : true, message: "review added successfully", data: bookByBookId})
+        // temporarily adding one new property inside book which consist all reviews of this book
+        book.reviewsData = allReviewsOfThisBook
+
+        res.status(201).send({status : true, message: "review added successfully", data: book})
        
     }catch(err){
         res.status(500).send({error : err.message})
@@ -187,7 +190,7 @@ const updateReview = async function (req, res){
             return res.status(400).send({status : false, message : "rating must be provided in Number format"})
             }
 
-            if(rating > 1 && rating < 5){
+            if(rating < 1 && rating > 5){
             return res.status(400).send({status : false, message : "rating should be : 1 < Rating < 5  "})
             }
 

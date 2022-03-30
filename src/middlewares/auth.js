@@ -8,7 +8,7 @@ const authentication = async function(req, res, next){
         const secretKey = "asdfgh!@#41234sasdg565"
 
         if(!token){
-        return res.status(400).send({status: false, message : "Please provide token"})
+        return res.status(401).send({status: false, message : "Please provide token"})
         }
 
         const decodedToken = jwt.verify(token, secretKey) 
@@ -36,13 +36,13 @@ const authorization = async function(req, res,next){
         return res.status(400).send({status : false, message : "bookId is not valid"})
         }
 
-        const bookById = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null})
+        const bookByBookId = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null})
 
-        if(!bookById){
+        if(!bookByBookId){
         return res.status(404).send({status : false, message : `no book found by ${bookId}`})    
         }
 
-        if((decodedToken.userId != bookById.userId)){
+        if((decodedToken.userId != bookByBookId.userId)){
         return res.status(403).send({status : false, message : `unauthorized access`})
         }
         // checking jwt token expiry

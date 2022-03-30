@@ -47,7 +47,7 @@ const registerUser = async function(req, res){
             const {title, name, phone, email, password} = requestBody
                 
             if(!isValid(title)){
-            return    res.status(400).send({status : false, message : `title is required and should be valid format like: "Mr"`})
+            return    res.status(400).send({status : false, message : `title is required and should be valid format like: Mr/Mrs/Miss`})
             }
 
             if(!(["Mr", "Mrs", "Miss"].includes(title.trim()))){
@@ -55,7 +55,7 @@ const registerUser = async function(req, res){
             }
 
             if(!isValid(name)){
-            return    res.status(400).send({status : false, message : `name is required and should be in valid format like : "JOHN"`})
+            return    res.status(400).send({status : false, message : `name is required and should be in valid format like : JOHN`})
             }
 
             if(!isValid(phone)){

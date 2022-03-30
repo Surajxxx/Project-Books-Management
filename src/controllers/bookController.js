@@ -103,7 +103,7 @@ const registerBook = async function (req, res){
             }
 
             if(!isValid(category)){
-            return  res.status(400).send({status : false, message : `category is required and should be in valid format like: "Fiction"`})
+            return  res.status(400).send({status : false, message : `category is required and should be in valid format like: Fiction`})
             }
 
             // if subcategory is an array then validating each element
@@ -112,14 +112,14 @@ const registerBook = async function (req, res){
                 for(let i= 0; i<subcategory.length; i++){
                     element = subcategory[i]
                     if(!isValid(element)){
-                    return  res.status(400).send({status : false, message : `subcategory is required and should be in valid format like: ["Romantic", "cool"] `})
+                    return  res.status(400).send({status : false, message : `subcategory is required and should be in valid format like: [Romantic, cool] `})
                     }
                 }
 
             }
             // if subcategory is not an array then validating that 
             if(!isValidSubcategory(subcategory)){
-            return  res.status(400).send({status : false, message : `subcategory is required and should be in valid format like: "Romantic" `})
+            return  res.status(400).send({status : false, message : `subcategory is required and should be in valid format like: Romantic `})
             }
 
             if(!isValid(releasedAt)){
@@ -268,16 +268,6 @@ const updateBooks = async function(req, res){
         return res.status(400).send({status : false, message : "bookId is required in path params"})
         }   
     
-        if(!isValidIdType(bookId)){
-        return  res.status(400).send({status : false, message : `enter a valid bookId`})
-        }
-    
-        const bookByBookId = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null})
-    
-        if(!bookByBookId){
-        return res.status(404).send({status : false, message : `no book found by ${bookId}`})
-        }
-
         // using destructuring 
         const {title, excerpt, releasedAt, ISBN} = requestBody
 
@@ -298,7 +288,7 @@ const updateBooks = async function(req, res){
                 updates["title"] = title.trim()
 
             }else{
-                return res.status(400).send({status : false, message : `enter book title in valid format like : "Atomic habits"`})
+                return res.status(400).send({status : false, message : `enter book title in valid format like : Atomic habits`})
             }
 
         }
@@ -380,16 +370,6 @@ const deleteBook = async function(req, res){
             return res.status(400).send({status : false, message : "bookId is required in path params"})
             }   
         
-            if(!isValidIdType(bookId)){
-            return  res.status(400).send({status : false, message : `enter a valid bookId`})
-            }
-        
-            const bookByBookId = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null})
-        
-            if(!bookByBookId){
-            return res.status(404).send({status : false, message : `no book found by ${bookId}`})
-            }
-
             const markDirtyBook = await BookModel.findByIdAndUpdate(bookId, {$set : {isDeleted : true, deletedAt : Date.now() }}, {new : true})
 
             const markDirtyAllReviewsOfThisBook = await ReviewModel.updateMany({bookId : bookId, isDeleted: false}, {$set : {isDeleted : true }}, {new : true})
