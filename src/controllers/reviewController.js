@@ -59,6 +59,7 @@ const newReview = async function(req, res){
             if(!bookByBookId){
             return res.status(404).send({status : false, message :` No Book found by ${bookId}`})
             }
+
         // using destructuring then checking existence of property. If exist then validating that key     
         const {reviewedBy, rating, review} = requestBody
 
@@ -84,7 +85,7 @@ const newReview = async function(req, res){
             return res.status(400).send({status : false, message : "rating should be between : 1 to 5  "})
             }
 
-            reviewData["rating"] = rating
+            reviewData["rating"] = rating.trim()
         
         }else{
             return res.status(400).send({status : false, message : "rating must be provided in Number format"})
