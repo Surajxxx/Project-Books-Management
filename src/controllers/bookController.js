@@ -29,6 +29,11 @@ const ReviewModel = require('../models/reviewModel')
         return true
     }  
 
+
+
+
+
+
 // handler function for new book entry    
 const registerBook = async function (req, res){
     try{
@@ -138,7 +143,7 @@ const registerBook = async function (req, res){
               
 
         // adding validated keys from requestBody and adding default values of isDeleted, reviews and deletedAt    
-        const bookData = {title, excerpt, userId, ISBN, category, subcategory, releasedAt, isDeleted: false, reviews: 0, deletedAt : null}
+        const bookData = {title : title.trim(), excerpt : excerpt.trim(), userId : userId.trim(), ISBN : ISBN.trim(), category : category.trim(), subcategory : subcategory.trim(), releasedAt, isDeleted: false, reviews: 0, deletedAt : null}
 
         const newBook = await BookModel.create(bookData)
 
@@ -148,6 +153,11 @@ const registerBook = async function (req, res){
         res.status(500).send({error : err.message})
     }
 }
+
+
+
+
+
 
 
 const booksList = async function(req, res){
@@ -170,7 +180,7 @@ const booksList = async function(req, res){
             const userById = await UserModel.findById(userId)   
 
                 if(userById){
-                    filterConditions['userId'] = userId
+                    filterConditions['userId'] = userId.trim()
                 }
             }
             
@@ -205,6 +215,12 @@ const booksList = async function(req, res){
         res.status(500).send({error : err.message})
     }
 }
+
+
+
+
+
+
 
 
 const getBookDetails = async function(req, res){
@@ -247,6 +263,13 @@ const getBookDetails = async function(req, res){
         res.status(500).send({error : err.message})
     }
 }
+
+
+
+
+
+
+
 
 const updateBooks = async function(req, res){
     try{
@@ -350,6 +373,12 @@ const updateBooks = async function(req, res){
         res.status(500).send({error : err.message})
     }
 }
+
+
+
+
+
+
 
 const deleteBook = async function(req, res){
     try{

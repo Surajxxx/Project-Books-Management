@@ -26,6 +26,11 @@ const isValidPhone = function(phone){
 }
 
 
+
+
+
+
+
 // handler function for registering new user
 
 const registerUser = async function(req, res){
@@ -105,6 +110,11 @@ const registerUser = async function(req, res){
     }
 
 }
+
+
+
+
+
 
 
 // handler function for user login 
