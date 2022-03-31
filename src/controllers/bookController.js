@@ -143,7 +143,7 @@ const registerBook = async function (req, res){
               
 
         // adding validated keys from requestBody and adding default values of isDeleted, reviews and deletedAt    
-        const bookData = {title : title.trim(), excerpt : excerpt.trim(), userId : userId.trim(), ISBN : ISBN.trim(), category : category.trim(), subcategory : subcategory.trim(), releasedAt, isDeleted: false, reviews: 0, deletedAt : null}
+        const bookData = {title : title.trim(), excerpt : excerpt.trim(), userId : userId.trim(), ISBN : ISBN.trim(), category : category.trim(), subcategory, releasedAt, isDeleted: false, reviews: 0, deletedAt : null}
 
         const newBook = await BookModel.create(bookData)
 
