@@ -1,10 +1,6 @@
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Schema.Types.ObjectId
 
-const isValidISBN = function(ISBN){
-    let regexForISBN = /((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])/
-    return regexForISBN.test(ISBN)
-}
 
 const bookSchema = new mongoose.Schema({
 
@@ -30,7 +26,6 @@ const bookSchema = new mongoose.Schema({
             type     : String,
             required : [true, "ISBN must be provided"],
             unique   : [true, "ISBN already exist"],
-            validate : [isValidISBN, "Enter a valid ISBN"],
             trim     : true 
         },
         category:{

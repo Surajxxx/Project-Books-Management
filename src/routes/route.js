@@ -5,19 +5,26 @@ const BookController = require('../controllers/bookController')
 const ReviewController = require('../controllers/reviewController')
 const MiddleWares = require('../middlewares/auth')
 
+
+
 //test-api
 router.get('/test-me',  function(req, res){
     res.send({status:true, message : "test-api working fine"})
 })
+
+
+//************************************USER****************************************** */    
+
 
 // new user register and user login
 router.post('/register', UserController.registerUser)
 router.get('/login', UserController.userLogin)
 
 
+//*************************************BOOK********************************************* */
 
 // new book registration
-router.post('/books', MiddleWares.authentication ,BookController.registerBook )
+router.post('/books', MiddleWares.authentication ,  BookController.registerBook )
 
 // get list of all books 
 router.get('/books' , MiddleWares.authentication , BookController.booksList)
@@ -32,7 +39,7 @@ router.put('/books/:bookId', MiddleWares.authentication, MiddleWares.authorizati
 router.delete('/books/:bookId', MiddleWares.authentication, MiddleWares.authorization, BookController.deleteBook)
 
 
-
+//********************************************Review********************************************************* */
 
 //create new review
 router.post('/books/:bookId/review', ReviewController.newReview )

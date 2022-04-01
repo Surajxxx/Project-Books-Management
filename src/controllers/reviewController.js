@@ -2,18 +2,16 @@ const ReviewModel = require('../models/reviewModel')
 const BookModel = require('../models/bookModel')
 const mongoose = require('mongoose')
 
-// validation functions
+//*************************************VALIDATION FUNCTIONS************************************************* */
 const isValid = function(value){
     if(typeof (value) == 'undefined' || value == null) return false
-    if(typeof (value) == 'string' && value.trim().length == 0) return false
-    if(typeof (value) == 'number') return false
-    if(typeof (value) == 'object') return false
-    return true
+    if(typeof (value) == 'string' && value.trim().length > 0) return true
 }
 
 const isValidRating = function(value){
     if (typeof (value) == 'undefined' || value == null) return false
     if ( typeof (value) != 'number') return false
+    if(value < 1 || value > 5) return false
     return true
 }
 
@@ -27,7 +25,7 @@ return mongoose.Types.ObjectId.isValid(objectId)
 
 
 
-
+//**********************************************CREATING NEW REVIEW*************************************** */
 
 
 // handler for creating new Review
@@ -39,7 +37,7 @@ const newReview = async function(req, res){
 
             //query params must be empty
             if(isValidRequestBody(queryParams)){
-            return  res.status(400).send({status: false, message : "invalid endpoint"})
+            return  res.status(400).send({status: false, message : "invalid request"})
             }
 
             if(!isValidRequestBody(requestBody)){
@@ -81,14 +79,10 @@ const newReview = async function(req, res){
        
         if(isValidRating(rating)){
 
-            if(rating < 1 || rating > 5){
-            return res.status(400).send({status : false, message : "rating should be between : 1 to 5  "})
-            }
-
-            reviewData["rating"] = rating.trim()
+            reviewData["rating"] = rating
         
         }else{
-            return res.status(400).send({status : false, message : "rating must be provided in Number format"})
+            return res.status(400).send({status : false, message : "rate the book from 1 to 5, in Number format"})
         }
            
        
@@ -129,7 +123,7 @@ const newReview = async function(req, res){
 
 
 
-
+//*******************************************UPDATING A REVIEW*********************************************** */
 
 
 
@@ -142,7 +136,7 @@ const updateReview = async function (req, res){
 
         // query params must be empty
         if(isValidRequestBody(queryParams)){
-        return  res.status(400).send({status: false, message : "invalid endpoint"})
+        return  res.status(400).send({status: false, message : "invalid request"})
         }
         // request body must be empty
         if(!isValidRequestBody(requestBody)){
@@ -199,11 +193,7 @@ const updateReview = async function (req, res){
 
         if(requestBody.hasOwnProperty("rating")){
             if(!isValidRating(rating)){
-            return res.status(400).send({status : false, message : "rating must be provided in Number format"})
-            }
-
-            if(rating < 1 && rating > 5){
-            return res.status(400).send({status : false, message : "rating should be : 1 < Rating < 5  "})
+            return res.status(400).send({status : false, message : "rate the book from 1 to 5, in Number format"})
             }
 
                 update["rating"] = rating            
@@ -235,7 +225,7 @@ const updateReview = async function (req, res){
 
 
 
-
+//*********************************DELETING A REVIEW************************************************** */
 
 
 
@@ -247,7 +237,7 @@ const deleteReview = async function(req, res){
         const reviewId = req.params.reviewId
 
         if(isValidRequestBody(queryParams)){
-        return  res.status(400).send({status: false, message : "invalid endpoint"})
+        return  res.status(400).send({status: false, message : "invalid request"})
         }
 
         if(isValidRequestBody(requestBody)){

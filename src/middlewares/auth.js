@@ -1,61 +1,83 @@
-const jwt = require('jsonwebtoken')
-const { default: mongoose } = require('mongoose')
-const BookModel = require('../models/bookModel')
+const jwt = require("jsonwebtoken");
+const { default: mongoose } = require("mongoose");
+const BookModel = require("../models/bookModel");
 
-const authentication = async function(req, res, next){
-    try{
-        const token = req.headers['x-api-key']
-        const secretKey = "asdfgh!@#41234sasdg565"
 
-        if(!token){
-        return res.status(401).send({status: false, message : "Please provide token"})
-        }
+//*************************************AUTHENTICATION*************************************************** */
 
-        const decodedToken = jwt.verify(token, secretKey) 
+const authentication = async function (req, res, next) {
+  const token = req.headers["x-api-key"];
+  const secretKey = "asdfgh!@#41234sasdg565";
 
-        if(!decodedToken){
-        return res.status(401).send({status : false, message: "authentication failed"})
-        }
-        // setting a key in request,  "decodedToken" which consist userId and exp.
-        req.decodedToken = decodedToken
-        
-        next()
+  if (!token) {
+    return res
+      .status(401)
+      .send({ status: false, message: "Please provide token" });
+  }
 
-    }catch(err){
-       
-        res.status(500).send({error : err.message})
+  try {
+    const decodedToken = jwt.verify(token, secretKey, {
+      ignoreExpiration: true,
+    });
+
+    // token expiry validation
+    if (Date.now() > decodedToken.exp * 1000) {
+      return res
+        .status(401)
+        .send({
+          status: false,
+          message: `session expired, please login again`,
+        });
     }
-}
 
-const authorization = async function(req, res,next){
-    try{
-        const bookId = req.params.bookId
-        const decodedToken = req.decodedToken
-       
-        if(mongoose.Types.ObjectId.isValid(bookId) == false){
-        return res.status(400).send({status : false, message : "bookId is not valid"})
-        }
+    req.decodedToken = decodedToken;
 
-        const bookByBookId = await BookModel.findOne({_id : bookId, isDeleted : false, deletedAt : null})
+    next();
+  } catch {
+    res.status(401).send({ error: "authentication failed, please login" });
+  }
+};
 
-        if(!bookByBookId){
-        return res.status(404).send({status : false, message : `no book found by ${bookId}`})    
-        }
+//*******************************************AUTHORIZATION**************************************************** */
 
-        if((decodedToken.userId != bookByBookId.userId)){
-        return res.status(403).send({status : false, message : `unauthorized access`})
-        }
-        // checking jwt token expiry
-        if((Date.now() > (decodedToken.exp * 1000))){
-        return res.status(403).send({status : false, message : `session expired, please login again`})
-        }
-        
-        next()
+const authorization = async function (req, res, next) {
+  try {
+    const bookId = req.params.bookId;
+    const decodedToken = req.decodedToken;
 
-    }catch(err){
-        res.status(500).send({error : err.message})
-    }
-}
+  
+      if (mongoose.Types.ObjectId.isValid(bookId) == false) {
+        return res
+          .status(400)
+          .send({ status: false, message: "bookId is not valid" });
+      }
 
-module.exports.authentication = authentication
-module.exports.authorization = authorization
+      const bookByBookId = await BookModel.findOne({
+        _id: bookId,
+        isDeleted: false,
+        deletedAt: null,
+      });
+
+      if (!bookByBookId) {
+        return res
+          .status(404)
+          .send({ status: false, message: `no book found by ${bookId}` });
+      }
+
+      if (decodedToken.userId != bookByBookId.userId) {
+        return res
+          .status(403)
+          .send({ status: false, message: `unauthorized access` });
+      }
+
+      next();
+    
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+};
+
+//**********************************EXPORTING BOTH MIDDLEWARE FUNCTIONS************************************* */
+
+module.exports.authentication = authentication;
+module.exports.authorization = authorization;
